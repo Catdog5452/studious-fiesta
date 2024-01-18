@@ -7,14 +7,66 @@ import Box from "@mui/material/Box";
 import AddLecturer from "../components/Add Paper/AddLecturer";
 import Assessments from "../components/Add Paper/Assessments";
 import { useState } from "react";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import Collapse from "@mui/material/Collapse";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 // components
 
 export default function AddPaper() {
+  const [paperCode, setPaperCode] = useState("");
+  const [paperName, setPaperName] = useState("");
+  const [paperYear, setPaperYear] = useState(new Date().getFullYear());
+  const [paperSemester, setPaperSemester] = useState(1);
+  const [paperDepartment, setPaperDepartment] = useState("");
+  const [paperDescription, setPaperDescription] = useState("");
   const [lecturers, setLecturers] = useState([]);
   const [assessments, setAssessments] = useState([]);
-  const handleSubmit = () => {
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const handleSubmit = (event) => {
     // TODO: implement
+    event.preventDefault();
+
+    let totalAssessmentWeight = 0;
+    assessments.forEach((assessment) => {
+      totalAssessmentWeight += parseInt(assessment.assessmentWeight);
+    });
+
+    if (totalAssessmentWeight !== 100) {
+      // handle error
+      setAlertOpen(true);
+      setAlertMessage("Total assessment weight is not 100%");
+      return;
+    }
+
+    const paper = {
+      paperCode: paperCode,
+      paperName: paperName,
+      paperYear: paperYear,
+      paperSemester: paperSemester,
+      paperDepartment: paperDepartment,
+      paperDescription: paperDescription,
+      lecturers: lecturers,
+      assessments: assessments,
+    };
+
+    console.log(paper);
+    handleReset();
+  };
+
+  const handleReset = () => {
+    setLecturers([]);
+    setAssessments([]);
+    setPaperCode("");
+    setPaperName("");
+    setPaperYear(new Date().getFullYear());
+    setPaperSemester(1);
+    setPaperDepartment("");
+    setPaperDescription("");
   };
 
   return (
@@ -24,9 +76,9 @@ export default function AddPaper() {
       <CssBaseLine />
       <Box
         component="form"
-        noValidate
         autoComplete="off"
         onSubmit={handleSubmit}
+        onReset={handleReset}
         sx={{ mt: 3 }}
       >
         <Grid container spacing={2} sx={{ width: "100%", maxWidth: 850 }}>
@@ -37,6 +89,10 @@ export default function AddPaper() {
               id="paperCode"
               label="Paper Code"
               name="paperCode"
+              value={paperCode}
+              onChange={(event) => {
+                setPaperCode(event.target.value);
+              }}
               autoFocus
               fullWidth
             />
@@ -49,6 +105,10 @@ export default function AddPaper() {
               id="paperName"
               label="Paper Name"
               name="paperName"
+              value={paperName}
+              onChange={(event) => {
+                setPaperName(event.target.value);
+              }}
               fullWidth
             />
           </Grid>
@@ -61,8 +121,11 @@ export default function AddPaper() {
               id="paperYear"
               label="Paper Year"
               name="paperYear"
+              value={paperYear}
+              onChange={(event) => {
+                setPaperYear(event.target.value);
+              }}
               fullWidth
-              defaultValue={new Date().getFullYear()}
             />
           </Grid>
 
@@ -74,7 +137,10 @@ export default function AddPaper() {
               label="Paper Semester"
               name="paperSemester"
               fullWidth
-              defaultValue={1}
+              value={paperSemester}
+              onChange={(event) => {
+                setPaperSemester(event.target.value);
+              }}
             />
           </Grid>
 
@@ -85,6 +151,10 @@ export default function AddPaper() {
               label="Paper Department"
               name="paperDepartment"
               fullWidth
+              value={paperDepartment}
+              onChange={(event) => {
+                setPaperDepartment(event.target.value);
+              }}
             />
           </Grid>
 
@@ -97,6 +167,10 @@ export default function AddPaper() {
               multiline
               rows={4}
               fullWidth
+              value={paperDescription}
+              onChange={(event) => {
+                setPaperDescription(event.target.value);
+              }}
             />
           </Grid>
 
@@ -112,6 +186,45 @@ export default function AddPaper() {
               assessments={assessments}
               setAssessments={setAssessments}
             />
+          </Grid>
+        </Grid>
+
+        {/* Alert */}
+        <Collapse in={alertOpen}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => setAlertOpen(false)}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ mt: 2 }}
+          >
+            {alertMessage}
+          </Alert>
+        </Collapse>
+
+        {/* Submit button */}
+        <Grid
+          spacing={2}
+          container
+          justifyContent="flex-end"
+          sx={{ mt: 2, width: "100%", maxWidth: 400 }}
+        >
+          <Grid xs={12} sm={6}>
+            <Button variant="contained" fullWidth color="success" type="submit">
+              Add
+            </Button>
+          </Grid>
+          <Grid xs={12} sm={6}>
+            <Button variant="contained" fullWidth color="error" type="reset">
+              Reset
+            </Button>
           </Grid>
         </Grid>
       </Box>

@@ -29,29 +29,40 @@ export default function AddAssessment({
   const [dueDate, setDueDate] = useState(dayjs());
   const [dueTime, setDueTime] = useState(dayjs().minute(0));
   const [hasSubAssessments, setHasSubAssessments] = useState(false);
-  const [subAssessments, setSubAssessments] = useState([]);
+
+  const clearForm = () => {
+    setName("");
+    setWeight("");
+    setDueDate(dayjs());
+    setDueTime(dayjs().minute(0));
+    setHasSubAssessments(false);
+  };
+
+  const handleSubmit = () => {
+    if (name != "" && weight != "") {
+      const assessment = {
+        assessmentName: name,
+        assessmentWeight: weight,
+        assessmentDueDate: dueDate.format("DD/MM/YYYY"),
+        assessmentDueTime: dueTime.format("hh:mma"),
+        hasSubAssessments: hasSubAssessments ? "Yes" : "No",
+      };
+
+      console.log(assessment);
+      setAssessments([...assessments, assessment]);
+      handleClose();
+      clearForm();
+    } else {
+      // handle error
+    }
+  };
 
   return (
     <Container>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         {/* Dialog for adding new assessment */}
 
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            autoComplete: "off",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const data = new FormData(event.currentTarget);
-              const formData = Object.fromEntries(data.entries());
-              setAssessments([...assessments, formData]);
-              console.log(formData);
-              handleClose();
-            },
-          }}
-        >
+        <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Add new assessment</DialogTitle>
           <DialogContent>
             <Grid container spacing={2} sx={{ mt: 2 }}>
@@ -125,16 +136,25 @@ export default function AddAssessment({
                     }
                     label="Are there any sub assessments?"
                     labelPlacement="start"
+                    name="hasSubAssessments"
+                    id="hasSubAssessments"
                   />
                 </FormGroup>
               </Grid>
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" color="success" type="submit">
+            <Button variant="contained" color="success" onClick={handleSubmit}>
               Add
             </Button>
-            <Button variant="contained" color="error" onClick={handleClose}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                handleClose();
+                clearForm();
+              }}
+            >
               Cancel
             </Button>
           </DialogActions>
