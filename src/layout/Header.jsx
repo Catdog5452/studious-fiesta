@@ -1,9 +1,5 @@
 // libraries
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-//import IconButton from "@mui/material/IconButton";
-//import MenuIcon from "@mui/icons-material/Menu";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 
 export default function Header() {
   return (
@@ -12,7 +8,7 @@ export default function Header() {
       sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
     >
       <Toolbar>
-        <Typography variant="h6" noWrap component="div">
+        <Typography variant="h4" noWrap component="div">
           Paper Management System
         </Typography>
       </Toolbar>

@@ -1,8 +1,8 @@
-// libs
+// dependencies
 import { Outlet } from "react-router-dom";
-import Box from "@mui/material/Box";
 import CssBaseLine from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";
 
 // components
 import Header from "./Header";

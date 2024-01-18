@@ -13,8 +13,8 @@ import { Link } from "react-router-dom";
 // icons
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
-import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import SettingsIcon from "@mui/icons-material/Settings";
+import NoteAddIcon from "@mui/icons-material/NoteAdd";
 
 // components
 
