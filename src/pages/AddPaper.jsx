@@ -5,13 +5,14 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Unstable_Grid2";
 import Box from "@mui/material/Box";
 import AddLecturer from "../components/Add Paper/AddLecturer";
-import AddAssessments from "../components/Add Paper/AddAssessments";
+import Assessments from "../components/Add Paper/Assessments";
 import { useState } from "react";
 
 // components
 
 export default function AddPaper() {
   const [lecturers, setLecturers] = useState([]);
+  const [assessments, setAssessments] = useState([]);
   const handleSubmit = () => {
     // TODO: implement
   };
@@ -28,7 +29,7 @@ export default function AddPaper() {
         onSubmit={handleSubmit}
         sx={{ mt: 3 }}
       >
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ width: "100%", maxWidth: 850 }}>
           {/* Paper code */}
           <Grid xs={12} sm={6}>
             <TextField
@@ -107,7 +108,10 @@ export default function AddPaper() {
 
           {/* Add Assessments */}
           <Grid xs={12}>
-            <AddAssessments />
+            <Assessments
+              assessments={assessments}
+              setAssessments={setAssessments}
+            />
           </Grid>
         </Grid>
       </Box>

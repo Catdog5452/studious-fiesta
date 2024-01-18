@@ -38,7 +38,7 @@ export default function AddLecturer({ lecturers, setLecturers }) {
     <Box>
       <Typography variant="h6">Lecturers</Typography>
       {/* List all current lecturers for this paper */}
-      <List>
+      <List sx={{ width: "100%", maxWidth: 360 }}>
         {lecturers.map((lecturer) => (
           <ListItem key={lecturer.lecturerEmail}>
             <ListItemText primary={lecturer.lecturerName} />
