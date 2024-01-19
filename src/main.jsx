@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import ErrorPage from "./pages/ErrorPage";
 import Settings from "./pages/Settings";
 import AddPaper from "./pages/AddPaper";
+import Paper from "./pages/Paper";
 
 // styles
 import "./index.css";
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "/add-paper",
         element: <AddPaper />,
+      },
+      {
+        path: "/paper/:id",
+        element: <Paper />,
       },
     ],
   },

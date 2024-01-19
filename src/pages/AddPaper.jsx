@@ -6,12 +6,13 @@ import Grid from "@mui/material/Unstable_Grid2";
 import Box from "@mui/material/Box";
 import AddLecturer from "../components/Add Paper/AddLecturer";
 import Assessments from "../components/Add Paper/Assessments";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { PaperUpdateContext } from "../context/PaperContext";
 
 // components
 
@@ -26,6 +27,8 @@ export default function AddPaper() {
   const [assessments, setAssessments] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+
+  const setPapers = useContext(PaperUpdateContext);
 
   const handleSubmit = (event) => {
     // TODO: implement
@@ -43,7 +46,10 @@ export default function AddPaper() {
       return;
     }
 
+    const id = `${paperCode}-${paperYear}-${paperSemester}`;
+
     const paper = {
+      id: id,
       paperCode: paperCode,
       paperName: paperName,
       paperYear: paperYear,
@@ -54,7 +60,10 @@ export default function AddPaper() {
       assessments: assessments,
     };
 
+    setPapers((papers) => [...papers, paper]);
+
     console.log(paper);
+
     handleReset();
   };
 
