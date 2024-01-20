@@ -1,4 +1,4 @@
-// libraries
+// dependencies
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 // components
 import Root from "./layout/Root";
 import Home from "./pages/Home";
-import ErrorPage from "./pages/ErrorPage";
+// import ErrorPage from "./pages/ErrorPage";
 import Settings from "./pages/Settings";
 import AddPaper from "./pages/AddPaper";
 import Paper from "./pages/Paper";

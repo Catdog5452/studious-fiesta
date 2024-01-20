@@ -19,6 +19,7 @@ import { PaperUpdateContext, PaperContext } from "../context/PaperContext";
 import { addPaper } from "../database/getPapers";
 
 export default function AddPaper() {
+  // TODO: change each individual state to an object and create a handleChange() method
   const [paperCode, setPaperCode] = useState("");
   const [paperName, setPaperName] = useState("");
   const [paperYear, setPaperYear] = useState(new Date().getFullYear());

@@ -1,4 +1,7 @@
-export default function Overview() {
+// dependencies
+import PropTypes from "prop-types";
+
+export default function Overview({ paper }) {
   return (
     <div>
       <h1>Overview</h1>
@@ -6,3 +9,7 @@ export default function Overview() {
     </div>
   );
 }
+
+Overview.propTypes = {
+  paper: PropTypes.object.isRequired,
+};

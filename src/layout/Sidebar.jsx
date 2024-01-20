@@ -45,6 +45,7 @@ export default function Sidebar() {
       <Toolbar />
       <Box sx={{ overflow: "auto" }}>
         <List>
+          {/* TODO: Change <Link /> to <NavLink /> to handle currently selected */}
           {/* Home Navigation */}
           <Link to="/">
             <ListItem disablePadding>
@@ -93,23 +94,25 @@ export default function Sidebar() {
           </ListItem>
 
           {/* List of papers */}
-          <Collapse in={papersOpen} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              {papers.map((paper) => (
-                <Link to={`/paper/${paper.id}`} key={paper.id}>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      sx={{
-                        pl: 4,
-                      }}
-                    >
-                      <ListItemText primary={paper.paperName} />
-                    </ListItemButton>
-                  </ListItem>
-                </Link>
-              ))}
-            </List>
-          </Collapse>
+          {papers && (
+            <Collapse in={papersOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {papers.map((paper) => (
+                  <Link to={`/paper/${paper.id}`} key={paper.id}>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        sx={{
+                          pl: 4,
+                        }}
+                      >
+                        <ListItemText primary={paper.paperName} />
+                      </ListItemButton>
+                    </ListItem>
+                  </Link>
+                ))}
+              </List>
+            </Collapse>
+          )}
 
           <Divider />
 

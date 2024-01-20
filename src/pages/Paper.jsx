@@ -31,6 +31,7 @@ export default function Paper() {
   return (
     paper && (
       <Box>
+        {/* TODO: add delete button and confirmation window */}
         <Typography variant="h4">
           {paper.paperCode}: {paper.paperName}
         </Typography>

@@ -24,6 +24,7 @@ export default function AddAssessment({
   open,
   handleClose,
 }) {
+  // TODO: change each individual state to an object and create a handleChange() method
   const [name, setName] = useState("");
   const [weight, setWeight] = useState("");
   const [dueDate, setDueDate] = useState(dayjs());
