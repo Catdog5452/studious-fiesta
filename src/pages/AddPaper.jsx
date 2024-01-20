@@ -12,9 +12,11 @@ import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { PaperUpdateContext } from "../context/PaperContext";
+import Snackbar from "@mui/material/Snackbar";
 
 // components
+import { PaperUpdateContext, PaperContext } from "../context/PaperContext";
+import { addPaper } from "../database/getPapers";
 
 export default function AddPaper() {
   const [paperCode, setPaperCode] = useState("");
@@ -27,11 +29,20 @@ export default function AddPaper() {
   const [assessments, setAssessments] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const setPapers = useContext(PaperUpdateContext);
+  const papers = useContext(PaperContext);
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackbarOpen(false);
+  };
 
   const handleSubmit = (event) => {
-    // TODO: implement
     event.preventDefault();
 
     let totalAssessmentWeight = 0;
@@ -39,14 +50,21 @@ export default function AddPaper() {
       totalAssessmentWeight += parseInt(assessment.assessmentWeight);
     });
 
+    // all assessments weight must be 100%
     if (totalAssessmentWeight !== 100) {
-      // handle error
       setAlertOpen(true);
       setAlertMessage("Total assessment weight is not 100%");
       return;
     }
 
     const id = `${paperCode}-${paperYear}-${paperSemester}`;
+
+    // check if paper already exists
+    if (papers.find((paper) => paper.id === id)) {
+      setAlertOpen(true);
+      setAlertMessage("Paper already exists");
+      return;
+    }
 
     const paper = {
       id: id,
@@ -61,8 +79,10 @@ export default function AddPaper() {
     };
 
     setPapers((papers) => [...papers, paper]);
+    addPaper(paper);
 
     console.log(paper);
+    setSnackbarOpen(true);
 
     handleReset();
   };
@@ -76,6 +96,7 @@ export default function AddPaper() {
     setPaperSemester(1);
     setPaperDepartment("");
     setPaperDescription("");
+    setAlertOpen(false);
   };
 
   return (
@@ -122,9 +143,9 @@ export default function AddPaper() {
             />
           </Grid>
 
-          <Grid xs={6} sm={4}>
-            {/* Paper year 
+          {/* Paper year 
             TODO: provide year selector*/}
+          <Grid xs={6} sm={4}>
             <TextField
               required
               id="paperYear"
@@ -138,8 +159,8 @@ export default function AddPaper() {
             />
           </Grid>
 
+          {/* Paper semester */}
           <Grid xs={6} sm={4}>
-            {/* Paper semester */}
             <TextField
               required
               id="paperSemester"
@@ -153,8 +174,8 @@ export default function AddPaper() {
             />
           </Grid>
 
+          {/* Paper semester */}
           <Grid xs={6} sm={4}>
-            {/* Paper semester */}
             <TextField
               id="paperDepartment"
               label="Paper Department"
@@ -184,7 +205,6 @@ export default function AddPaper() {
           </Grid>
 
           {/* Add Lecturers */}
-
           <Grid xs={12}>
             <AddLecturer lecturers={lecturers} setLecturers={setLecturers} />
           </Grid>
@@ -236,6 +256,21 @@ export default function AddPaper() {
             </Button>
           </Grid>
         </Grid>
+
+        {/* Snackbar */}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Paper added successfully!
+          </Alert>
+        </Snackbar>
       </Box>
     </Box>
   );

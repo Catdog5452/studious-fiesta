@@ -22,11 +22,11 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // components
-import { PaperConext } from "../context/PaperContext";
+import { PaperContext } from "../context/PaperContext";
 
 export default function Sidebar() {
   const drawerWidth = 240;
-  const papers = useContext(PaperConext);
+  const papers = useContext(PaperContext);
   const [papersOpen, setPapersOpen] = useState(false);
 
   const handleClick = () => {
@@ -101,9 +101,6 @@ export default function Sidebar() {
                     <ListItemButton
                       sx={{
                         pl: 4,
-                        ...(location.pathname === `/paper/${paper.id}` && {
-                          bgcolor: "primary.main",
-                        }),
                       }}
                     >
                       <ListItemText primary={paper.paperName} />

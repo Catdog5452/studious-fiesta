@@ -1,10 +1,9 @@
 import Box from "@mui/material/Box";
-import { PaperConext } from "../context/PaperContext";
+import { PaperContext } from "../context/PaperContext";
 import { useContext } from "react";
 
 export default function Home() {
-  const papers = useContext(PaperConext);
-  console.log(papers);
+  const papers = useContext(PaperContext);
 
   return (
     <Box>
