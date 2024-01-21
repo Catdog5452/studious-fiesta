@@ -20,7 +20,7 @@ import { PaperContext, PaperUpdateContext } from "../context/PaperContext";
 import Overview from "../components/Paper/Overview";
 import Lecturers from "../components/Paper/Lecturers";
 import PaperAssessments from "../components/Paper/Assessments";
-import { deletePaper } from "../database/PaperDB";
+import { addPaper, deletePaper, updatePaper } from "../database/PaperDB";
 
 function a11yProps(index) {
   return {
@@ -55,6 +55,30 @@ export default function Paper() {
     deletePaper(paperId).then(() => {
       navigate("/");
     });
+  };
+
+  const handleUpdate = (newPaper) => {
+    // replace the paper in the list with the new one
+    const newPapers = papers.map((paper) => {
+      if (paper.id === paperId) {
+        return newPaper;
+      } else {
+        return paper;
+      }
+    });
+
+    setPapers(newPapers);
+    console.log(newPapers);
+
+    if (paperId == newPaper.id) {
+      updatePaper(newPaper);
+    } else {
+      deletePaper(paperId).then(() => {
+        addPaper(newPaper).then(() => {
+          navigate(`/paper/${newPaper.id}`);
+        });
+      });
+    }
   };
 
   return (
@@ -124,7 +148,7 @@ export default function Paper() {
           </Tabs>
         </Box>
         <CustomTabPanel value={tabValue} index={0}>
-          <Overview paper={paper} />
+          <Overview paper={paper} handleUpdate={handleUpdate} />
         </CustomTabPanel>
         <CustomTabPanel value={tabValue} index={1}>
           <Lecturers paper={paper} />

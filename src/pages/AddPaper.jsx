@@ -8,6 +8,10 @@ import AddLecturer from "../components/Add Paper/AddLecturer";
 import Assessments from "../components/Add Paper/Assessments";
 import { useContext, useState } from "react";
 import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 
 // components
 import { PaperUpdateContext, PaperContext } from "../context/PaperContext";
@@ -37,6 +41,17 @@ export default function AddPaper() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [yearListOpen, setYearListOpen] = useState(false);
+
+  // get the years 5 years before and after the current year
+  const years = [];
+  for (
+    let year = new Date().getFullYear() - 5;
+    year <= new Date().getFullYear() + 5;
+    year++
+  ) {
+    years.push(year);
+  }
 
   // contexts
   const setPapers = useContext(PaperUpdateContext);
@@ -78,25 +93,25 @@ export default function AddPaper() {
     }
 
     // add lecturers and assessments to the new paper
-    setNewPaper({
+    const paperAllDetails = {
       ...newPaper,
       id: `${newPaper.paperCode}-${newPaper.paperYear}-${newPaper.paperSemester}`,
       lecturers: lecturers,
       assessments: assessments,
-    });
+    };
 
     // check if paper already exists
-    if (papers.find((paper) => paper.id === newPaper.id)) {
+    if (papers.find((paper) => paper.id === paperAllDetails.id)) {
       setAlertOpen(true);
       setAlertMessage("Paper already exists");
       return;
     }
 
     // add the new paper to the database and context
-    setPapers((papers) => [...papers, newPaper]);
-    addPaper(newPaper);
+    setPapers((papers) => [...papers, paperAllDetails]);
+    addPaper(paperAllDetails);
 
-    console.log(newPaper);
+    console.log(paperAllDetails);
     setSnackbarOpen(true);
 
     handleReset();
@@ -169,18 +184,29 @@ export default function AddPaper() {
             />
           </Grid>
 
-          {/* Paper year 
-            TODO: provide year selector*/}
+          {/* Paper year */}
           <Grid xs={6} sm={4}>
-            <TextField
-              required
-              id="paperYear"
-              label="Paper Year"
-              name="paperYear"
-              value={newPaper.paperYear}
-              onChange={handleChange}
-              fullWidth
-            />
+            <FormControl fullWidth>
+              <InputLabel id="paperYearLabel">Paper Year</InputLabel>
+              <Select
+                labelId="paperYearLabel"
+                id="paperYear"
+                name="paperYear"
+                value={newPaper.paperYear}
+                onChange={handleChange}
+                open={yearListOpen}
+                onOpen={() => setYearListOpen(true)}
+                onClose={() => setYearListOpen(false)}
+                label="Paper Year"
+                fullWidth
+              >
+                {years.map((year) => (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
 
           {/* Paper semester */}

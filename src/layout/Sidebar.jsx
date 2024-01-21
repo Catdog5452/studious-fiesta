@@ -8,9 +8,10 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
 import Collapse from "@mui/material/Collapse";
+import PropTypes from "prop-types";
 
 // icons
 import HomeIcon from "@mui/icons-material/Home";
@@ -28,9 +29,32 @@ export default function Sidebar() {
   const drawerWidth = 240;
   const papers = useContext(PaperContext);
   const [papersOpen, setPapersOpen] = useState(false);
+  const location = useLocation();
 
   const handleClick = () => {
     setPapersOpen(!papersOpen);
+  };
+
+  let CustomerListItem = ({ to, primary, children, passkey }) => {
+    return (
+      <ListItem disablePadding key={passkey}>
+        <ListItemButton
+          component={Link}
+          to={to}
+          selected={location.pathname === to}
+        >
+          <ListItemIcon>{children}</ListItemIcon>
+          <ListItemText primary={primary} />
+        </ListItemButton>
+      </ListItem>
+    );
+  };
+
+  CustomerListItem.propTypes = {
+    passkey: PropTypes.string,
+    to: PropTypes.string.isRequired,
+    primary: PropTypes.string.isRequired,
+    children: PropTypes.node,
   };
 
   return (
@@ -44,43 +68,21 @@ export default function Sidebar() {
     >
       <Toolbar />
       <Box sx={{ overflow: "auto" }}>
-        <List>
-          {/* TODO: Change <Link /> to <NavLink /> to handle currently selected */}
+        <List component="nav">
           {/* Home Navigation */}
-          <Link to="/">
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <HomeIcon />
-                </ListItemIcon>
-                <ListItemText primary="Home" />
-              </ListItemButton>
-            </ListItem>
-          </Link>
+          <CustomerListItem to="/" primary="Home">
+            <HomeIcon />
+          </CustomerListItem>
 
           {/* About Navigation */}
-          <Link to="/about">
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <InfoIcon />
-                </ListItemIcon>
-                <ListItemText primary="About" />
-              </ListItemButton>
-            </ListItem>
-          </Link>
+          <CustomerListItem to="/about" primary="About">
+            <InfoIcon />
+          </CustomerListItem>
 
           {/* Add Paper Navigation */}
-          <Link to="/add-paper">
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <NoteAddIcon />
-                </ListItemIcon>
-                <ListItemText primary="Add Paper" />
-              </ListItemButton>
-            </ListItem>
-          </Link>
+          <CustomerListItem to="/add-paper" primary="Add Paper">
+            <NoteAddIcon />
+          </CustomerListItem>
 
           {/* Papers Navigation */}
           <ListItem disablePadding>
@@ -98,17 +100,12 @@ export default function Sidebar() {
             <Collapse in={papersOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 {papers.map((paper) => (
-                  <Link to={`/paper/${paper.id}`} key={paper.id}>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        sx={{
-                          pl: 4,
-                        }}
-                      >
-                        <ListItemText primary={paper.paperName} />
-                      </ListItemButton>
-                    </ListItem>
-                  </Link>
+                  <CustomerListItem
+                    key={paper.id}
+                    passkey={paper.id}
+                    to={`/paper/${paper.id}`}
+                    primary={paper.paperName}
+                  />
                 ))}
               </List>
             </Collapse>
@@ -117,16 +114,9 @@ export default function Sidebar() {
           <Divider />
 
           {/* Settings Navigation */}
-          <Link to="/settings">
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <SettingsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Settings" />
-              </ListItemButton>
-            </ListItem>
-          </Link>
+          <CustomerListItem to="/settings" primary="Settings">
+            <SettingsIcon />
+          </CustomerListItem>
         </List>
         <Divider />
       </Box>

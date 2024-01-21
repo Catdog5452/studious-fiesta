@@ -54,7 +54,7 @@ const router = createBrowserRouter([
         element: <Paper />,
       },
       {
-        path: "/paper/",
+        path: "*",
         element: <PaperRedirect />,
       },
     ],
