@@ -10,11 +10,28 @@ export default function OverviewEdit({
   handleCancel,
   handleSave,
 }) {
+  /**
+   * Handle any changes to the form and update the newPaper state
+   * @param {*} event onChange event
+   */
   const handleChange = (event) => {
+    // update the newPaper state
     setNewPaper((prevPaper) => ({
       ...prevPaper,
       [event.target.name]: event.target.value,
     }));
+
+    // update the id if the paper code, year or semester changes
+    if (
+      event.target.name === "paperCode" ||
+      event.target.name === "paperYear" ||
+      event.target.name === "paperSemester"
+    ) {
+      setNewPaper((prevPaper) => ({
+        ...prevPaper,
+        id: `${event.target.value}-${prevPaper.paperYear}-${prevPaper.paperSemester}`,
+      }));
+    }
   };
 
   return (

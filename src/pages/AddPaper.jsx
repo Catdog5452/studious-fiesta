@@ -4,9 +4,7 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Unstable_Grid2";
 import Box from "@mui/material/Box";
-import AddLecturer from "../components/Add Paper/AddLecturer";
-import Assessments from "../components/Add Paper/Assessments";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -18,6 +16,8 @@ import { PaperUpdateContext, PaperContext } from "../context/PaperContext";
 import { addPaper } from "../database/PaperDB";
 import CollapseAlert from "../components/CollapseAlert";
 import SnackbarAlert from "../components/SnackbarAlert";
+import AddLecturer from "../components/Add Paper/AddLecturer";
+import Assessments from "../components/Add Paper/Assessments";
 
 /**
  * Component to handle all adding of new papers to the system
@@ -36,11 +36,18 @@ export default function AddPaper() {
     lecturers: [],
     assessments: [],
   });
+  // lecturer and assessment states
   const [lecturers, setLecturers] = useState([]);
   const [assessments, setAssessments] = useState([]);
+
+  // alert states
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+
+  // snackbar states
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  // year list states
   const [yearListOpen, setYearListOpen] = useState(false);
 
   // get the years 5 years before and after the current year
@@ -59,9 +66,9 @@ export default function AddPaper() {
 
   /**
    * Handle closing the snackbar
-   * @param {*} event
-   * @param {*} reason
-   * @returns
+   * @param {*} event onClose event
+   * @param {*} reason reason for closing the snackbar
+   * @returns if the snackbar was closed by clicking away, return
    */
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -92,28 +99,19 @@ export default function AddPaper() {
       return;
     }
 
-    // add lecturers and assessments to the new paper
-    const paperAllDetails = {
-      ...newPaper,
-      id: `${newPaper.paperCode}-${newPaper.paperYear}-${newPaper.paperSemester}`,
-      lecturers: lecturers,
-      assessments: assessments,
-    };
-
     // check if paper already exists
-    if (papers.find((paper) => paper.id === paperAllDetails.id)) {
+    if (papers.find((paper) => paper.id === newPaper.id)) {
       setAlertOpen(true);
       setAlertMessage("Paper already exists");
       return;
     }
 
     // add the new paper to the database and context
-    setPapers((papers) => [...papers, paperAllDetails]);
-    addPaper(paperAllDetails);
+    setPapers((papers) => [...papers, newPaper]);
+    addPaper(newPaper);
 
-    console.log(paperAllDetails);
+    // display a snackbar message and reset the form
     setSnackbarOpen(true);
-
     handleReset();
   };
 
@@ -129,6 +127,8 @@ export default function AddPaper() {
       paperSemester: 1,
       paperDepartment: "",
       paperDescription: "",
+      lecturers: [],
+      assessments: [],
     });
     setAlertOpen(false);
   };
@@ -138,11 +138,33 @@ export default function AddPaper() {
    * @param {*} event onChange event
    */
   const handleChange = (event) => {
-    setNewPaper({
-      ...newPaper,
+    // update the newPaper state
+    setNewPaper((prevPaper) => ({
+      ...prevPaper,
       [event.target.name]: event.target.value,
-    });
+    }));
+
+    // update the id if the paper code, year or semester changes
+    if (
+      event.target.name === "paperCode" ||
+      event.target.name === "paperYear" ||
+      event.target.name === "paperSemester"
+    ) {
+      setNewPaper((prevPaper) => ({
+        ...prevPaper,
+        id: `${event.target.value}-${prevPaper.paperYear}-${prevPaper.paperSemester}`,
+      }));
+    }
   };
+
+  // update the newPaper state when the lecturers or assessments state changes
+  useEffect(() => {
+    setNewPaper((newPaper) => ({
+      ...newPaper,
+      lecturers: lecturers,
+      assessments: assessments,
+    }));
+  }, [lecturers, assessments]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>

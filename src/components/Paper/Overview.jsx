@@ -8,26 +8,41 @@ import OverviewEdit from "../Overview/OverviewEdit";
 import OverviewView from "../Overview/OverviewView";
 import SnackbarAlert from "../SnackbarAlert";
 
-/* TODO: Add a paper overview page. I want it to include: paper name, 
-code, year, semester, department, and description. I want there to be 
-a toggle button where I can toggle edit mode, then either save or 
-cancel changes. I'm still undecided if you should be able to change
- the code, year, and semester given the PK relies on those */
+/**
+ * Display the paper overview, including all information about the paper and the ability to edit the paper
+ * @param {*} param0 paper prop and handleUpdate function
+ * @returns Overview component
+ */
 export default function Overview({ paper, handleUpdate }) {
+  // states
   const [editMode, setEditMode] = useState(false);
   const [newPaper, setNewPaper] = useState(paper);
+
+  // snackbar states
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
+  /**
+   * Enable edit mode
+   */
   const enableEditMode = () => {
     setEditMode(true);
   };
 
+  /**
+   * Disable edit mode
+   */
   const disableEditMode = () => {
     setEditMode(false);
   };
 
+  /**
+   * Handle the snackbar close event
+   * @param {*} event onClose event
+   * @param {*} reason reason for closing the snackbar
+   * @returns if the snackbar was closed by clicking away, return
+   */
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -36,9 +51,15 @@ export default function Overview({ paper, handleUpdate }) {
     setOpenSnackbar(false);
   };
 
+  /**
+   * Handle the save button click
+   * @param {*} event onSubmit event
+   * @returns if no changes were made, display a snackbar message and return
+   */
   const handleSave = (event) => {
     event.preventDefault();
 
+    // if no changes were made, display a snackbar message and return
     if (newPaper === paper) {
       setSnackbarMessage("No changes made");
       setOpenSnackbar(true);
@@ -47,33 +68,42 @@ export default function Overview({ paper, handleUpdate }) {
       return;
     }
 
-    const updatedPaper = {
-      ...newPaper,
-      id: `${newPaper.paperCode}-${newPaper.paperYear}-${newPaper.paperSemester}`,
-    };
+    // update the paper
+    handleUpdate(newPaper);
 
-    handleUpdate(updatedPaper);
+    // display a snackbar message
     setSnackbarMessage("Changes saved");
     setOpenSnackbar(true);
     setSnackbarSeverity("success");
+
+    // disable edit mode
     disableEditMode();
   };
 
+  /**
+   * Discard any changes and revert to the original paper
+   */
   const handleCancel = () => {
-    // TODO: Cancel the changes made to the paper
+    // revert to the original paper
     setNewPaper(paper);
+
+    // display a snackbar message
     setSnackbarMessage("Changes discarded");
     setOpenSnackbar(true);
     setSnackbarSeverity("warning");
+
+    // disable edit mode
     disableEditMode();
   };
 
+  // update the newPaper state when the paper prop changes
   useEffect(() => {
     setNewPaper(paper);
   }, [paper]);
 
   return (
     <Box>
+      {/* Different components depending on whether in edit mode or not */}
       {editMode ? (
         <OverviewEdit
           newPaper={newPaper}
@@ -84,6 +114,8 @@ export default function Overview({ paper, handleUpdate }) {
       ) : (
         <OverviewView paper={newPaper} enableEditMode={enableEditMode} />
       )}
+
+      {/* Snackbar alert for any messages */}
       <SnackbarAlert
         snackbarOpen={openSnackbar}
         handleSnackbarClose={handleSnackbarClose}
@@ -95,6 +127,9 @@ export default function Overview({ paper, handleUpdate }) {
   );
 }
 
+/**
+ * Prop types for the Overview component
+ */
 Overview.propTypes = {
   paper: PropTypes.object.isRequired,
   handleUpdate: PropTypes.func.isRequired,
