@@ -8,33 +8,46 @@ import AddLecturer from "../components/Add Paper/AddLecturer";
 import Assessments from "../components/Add Paper/Assessments";
 import { useContext, useState } from "react";
 import Button from "@mui/material/Button";
-import Alert from "@mui/material/Alert";
-import Collapse from "@mui/material/Collapse";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import Snackbar from "@mui/material/Snackbar";
 
 // components
 import { PaperUpdateContext, PaperContext } from "../context/PaperContext";
-import { addPaper } from "../database/getPapers";
+import { addPaper } from "../database/PaperDB";
+import CollapseAlert from "../components/CollapseAlert";
+import SnackbarAlert from "../components/SnackbarAlert";
 
+/**
+ * Component to handle all adding of new papers to the system
+ * @returns AddPaper Component
+ */
 export default function AddPaper() {
-  // TODO: change each individual state to an object and create a handleChange() method
-  const [paperCode, setPaperCode] = useState("");
-  const [paperName, setPaperName] = useState("");
-  const [paperYear, setPaperYear] = useState(new Date().getFullYear());
-  const [paperSemester, setPaperSemester] = useState(1);
-  const [paperDepartment, setPaperDepartment] = useState("");
-  const [paperDescription, setPaperDescription] = useState("");
+  // states
+  const [newPaper, setNewPaper] = useState({
+    id: "",
+    paperCode: "",
+    paperName: "",
+    paperYear: new Date().getFullYear(),
+    paperSemester: 1,
+    paperDepartment: "",
+    paperDescription: "",
+    lecturers: [],
+    assessments: [],
+  });
   const [lecturers, setLecturers] = useState([]);
   const [assessments, setAssessments] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
+  // contexts
   const setPapers = useContext(PaperUpdateContext);
   const papers = useContext(PaperContext);
 
+  /**
+   * Handle closing the snackbar
+   * @param {*} event
+   * @param {*} reason
+   * @returns
+   */
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -43,9 +56,15 @@ export default function AddPaper() {
     setSnackbarOpen(false);
   };
 
+  /**
+   * Handle submitting the form and adding the paper to the database and context
+   * @param {*} event onSubmit event
+   * @returns return if error found
+   */
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    // check the total assessment weights
     let totalAssessmentWeight = 0;
     assessments.forEach((assessment) => {
       totalAssessmentWeight += parseInt(assessment.assessmentWeight);
@@ -58,46 +77,56 @@ export default function AddPaper() {
       return;
     }
 
-    const id = `${paperCode}-${paperYear}-${paperSemester}`;
+    // add lecturers and assessments to the new paper
+    setNewPaper({
+      ...newPaper,
+      id: `${newPaper.paperCode}-${newPaper.paperYear}-${newPaper.paperSemester}`,
+      lecturers: lecturers,
+      assessments: assessments,
+    });
 
     // check if paper already exists
-    if (papers.find((paper) => paper.id === id)) {
+    if (papers.find((paper) => paper.id === newPaper.id)) {
       setAlertOpen(true);
       setAlertMessage("Paper already exists");
       return;
     }
 
-    const paper = {
-      id: id,
-      paperCode: paperCode,
-      paperName: paperName,
-      paperYear: paperYear,
-      paperSemester: paperSemester,
-      paperDepartment: paperDepartment,
-      paperDescription: paperDescription,
-      lecturers: lecturers,
-      assessments: assessments,
-    };
+    // add the new paper to the database and context
+    setPapers((papers) => [...papers, newPaper]);
+    addPaper(newPaper);
 
-    setPapers((papers) => [...papers, paper]);
-    addPaper(paper);
-
-    console.log(paper);
+    console.log(newPaper);
     setSnackbarOpen(true);
 
     handleReset();
   };
 
+  /**
+   * Handle resetting the form
+   */
   const handleReset = () => {
-    setLecturers([]);
-    setAssessments([]);
-    setPaperCode("");
-    setPaperName("");
-    setPaperYear(new Date().getFullYear());
-    setPaperSemester(1);
-    setPaperDepartment("");
-    setPaperDescription("");
+    setNewPaper({
+      id: "",
+      paperCode: "",
+      paperName: "",
+      paperYear: new Date().getFullYear(),
+      paperSemester: 1,
+      paperDepartment: "",
+      paperDescription: "",
+    });
     setAlertOpen(false);
+  };
+
+  /**
+   * Handle updating the newPaper state when a field is changed
+   * @param {*} event onChange event
+   */
+  const handleChange = (event) => {
+    setNewPaper({
+      ...newPaper,
+      [event.target.name]: event.target.value,
+    });
   };
 
   return (
@@ -120,10 +149,8 @@ export default function AddPaper() {
               id="paperCode"
               label="Paper Code"
               name="paperCode"
-              value={paperCode}
-              onChange={(event) => {
-                setPaperCode(event.target.value);
-              }}
+              value={newPaper.paperCode}
+              onChange={handleChange}
               autoFocus
               fullWidth
             />
@@ -136,10 +163,8 @@ export default function AddPaper() {
               id="paperName"
               label="Paper Name"
               name="paperName"
-              value={paperName}
-              onChange={(event) => {
-                setPaperName(event.target.value);
-              }}
+              value={newPaper.paperName}
+              onChange={handleChange}
               fullWidth
             />
           </Grid>
@@ -152,10 +177,8 @@ export default function AddPaper() {
               id="paperYear"
               label="Paper Year"
               name="paperYear"
-              value={paperYear}
-              onChange={(event) => {
-                setPaperYear(event.target.value);
-              }}
+              value={newPaper.paperYear}
+              onChange={handleChange}
               fullWidth
             />
           </Grid>
@@ -168,10 +191,8 @@ export default function AddPaper() {
               label="Paper Semester"
               name="paperSemester"
               fullWidth
-              value={paperSemester}
-              onChange={(event) => {
-                setPaperSemester(event.target.value);
-              }}
+              value={newPaper.paperSemester}
+              onChange={handleChange}
             />
           </Grid>
 
@@ -182,10 +203,8 @@ export default function AddPaper() {
               label="Paper Department"
               name="paperDepartment"
               fullWidth
-              value={paperDepartment}
-              onChange={(event) => {
-                setPaperDepartment(event.target.value);
-              }}
+              value={newPaper.paperDepartment}
+              onChange={handleChange}
             />
           </Grid>
 
@@ -198,10 +217,8 @@ export default function AddPaper() {
               multiline
               rows={4}
               fullWidth
-              value={paperDescription}
-              onChange={(event) => {
-                setPaperDescription(event.target.value);
-              }}
+              value={newPaper.paperDescription}
+              onChange={handleChange}
             />
           </Grid>
 
@@ -220,24 +237,9 @@ export default function AddPaper() {
         </Grid>
 
         {/* Alert */}
-        <Collapse in={alertOpen}>
-          <Alert
-            severity="error"
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => setAlertOpen(false)}
-              >
-                <CloseIcon fontSize="inherit" />
-              </IconButton>
-            }
-            sx={{ mt: 2 }}
-          >
-            {alertMessage}
-          </Alert>
-        </Collapse>
+        <CollapseAlert alertOpen={alertOpen} setAlertOpen={setAlertOpen}>
+          {alertMessage}
+        </CollapseAlert>
 
         {/* Submit button */}
         <Grid
@@ -259,19 +261,13 @@ export default function AddPaper() {
         </Grid>
 
         {/* Snackbar */}
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={6000}
-          onClose={handleSnackbarClose}
+        <SnackbarAlert
+          severity="success"
+          snackbarOpen={snackbarOpen}
+          handleSnackbarClose={handleSnackbarClose}
         >
-          <Alert
-            onClose={handleSnackbarClose}
-            severity="success"
-            sx={{ width: "100%" }}
-          >
-            Paper added successfully!
-          </Alert>
-        </Snackbar>
+          Paper added successfully!
+        </SnackbarAlert>
       </Box>
     </Box>
   );

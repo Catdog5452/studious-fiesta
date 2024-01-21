@@ -1,5 +1,5 @@
 import { useEffect, useState, createContext } from "react";
-import { getPapers } from "../database/getPapers";
+import { getPapers } from "../database/PaperDB";
 import PropTypes from "prop-types";
 
 export const PaperContext = createContext();

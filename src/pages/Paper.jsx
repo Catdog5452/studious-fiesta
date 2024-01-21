@@ -1,18 +1,26 @@
 // dependencies
 import Box from "@mui/material/Box";
-import { useParams } from "react-router-dom";
-import { useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import PropTypes from "prop-types";
+import Grid from "@mui/material/Unstable_Grid2";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
 
 // components
-import { PaperContext } from "../context/PaperContext";
+import { PaperContext, PaperUpdateContext } from "../context/PaperContext";
 import Overview from "../components/Paper/Overview";
 import Lecturers from "../components/Paper/Lecturers";
 import PaperAssessments from "../components/Paper/Assessments";
+import { deletePaper } from "../database/PaperDB";
 
 function a11yProps(index) {
   return {
@@ -23,18 +31,86 @@ function a11yProps(index) {
 
 export default function Paper() {
   const papers = useContext(PaperContext);
+  const setPapers = useContext(PaperUpdateContext);
   const params = useParams();
   const paperId = params.id;
   const paper = papers.find((paper) => paper.id === paperId);
   const [tabValue, setTabValue] = useState(0);
+  const [openDelete, setOpenDelete] = useState(false);
+  const navigate = useNavigate();
+
+  const handleOpenDelete = () => {
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
+  const handleDelete = () => {
+    setOpenDelete(false);
+
+    const newPapers = papers.filter((paper) => paper.id !== paperId);
+    setPapers(newPapers);
+    deletePaper(paperId).then(() => {
+      navigate("/");
+    });
+  };
 
   return (
     paper && (
       <Box>
-        {/* TODO: add delete button and confirmation window */}
-        <Typography variant="h4">
-          {paper.paperCode}: {paper.paperName}
-        </Typography>
+        <Grid container spacing={2}>
+          <Grid xs={10}>
+            <Typography variant="h4">
+              {paper.paperCode}: {paper.paperName}
+            </Typography>
+          </Grid>
+          <Grid xs={2} display="flex" alignItems="right" justifyContent="right">
+            <Button
+              fullWidth
+              variant="contained"
+              color="error"
+              onClick={handleOpenDelete}
+              startIcon={<DeleteIcon />}
+            >
+              Delete
+            </Button>
+          </Grid>
+        </Grid>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={openDelete}
+          onClose={handleCloseDelete}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Delete Paper"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Are you sure you want to delete this paper? This can not be
+              undone, and all data associated with this paper will be lost.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCloseDelete}
+              variant="outlined"
+              color="warning"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDelete}
+              variant="outlined"
+              color="error"
+              autoFocus
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Box
           sx={{ mt: 1, borderBottom: 1, borderTop: 1, borderColor: "divider" }}
         >

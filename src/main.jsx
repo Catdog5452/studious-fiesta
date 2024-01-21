@@ -1,7 +1,11 @@
 // dependencies
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useNavigate,
+} from "react-router-dom";
 
 // components
 import Root from "./layout/Root";
@@ -13,6 +17,16 @@ import Paper from "./pages/Paper";
 
 // styles
 import "./index.css";
+
+// eslint-disable-next-line react-refresh/only-export-components
+const PaperRedirect = () => {
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    navigate("/");
+  }, [navigate]);
+
+  return null;
+};
 
 const router = createBrowserRouter([
   {
@@ -38,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: "/paper/:id",
         element: <Paper />,
+      },
+      {
+        path: "/paper/",
+        element: <PaperRedirect />,
       },
     ],
   },

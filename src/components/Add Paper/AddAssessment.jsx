@@ -1,3 +1,4 @@
+// dependencies
 import { useState } from "react";
 import PropTypes from "prop-types";
 import Dialog from "@mui/material/Dialog";
@@ -18,44 +19,83 @@ import Checkbox from "@mui/material/Checkbox";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 
+// components
+import CollapseAlert from "../CollapseAlert";
+
+/**
+ * Add a new assessment to the current new paper
+ *
+ * @export
+ * @param {*} {
+ *   assessments,
+ *   setAssessments,
+ *   open,
+ *   handleClose,
+ * }
+ * @return {*}
+ */
 export default function AddAssessment({
   assessments,
   setAssessments,
   open,
   handleClose,
 }) {
-  // TODO: change each individual state to an object and create a handleChange() method
-  const [name, setName] = useState("");
-  const [weight, setWeight] = useState("");
-  const [dueDate, setDueDate] = useState(dayjs());
-  const [dueTime, setDueTime] = useState(dayjs().minute(0));
-  const [hasSubAssessments, setHasSubAssessments] = useState(false);
+  const [newAssessment, setNewAssessment] = useState({
+    assessmentName: "",
+    assessmentWeight: "",
+    assessmentDueDate: dayjs(),
+    assessmentDueTime: dayjs().minute(0),
+    hasSubAssessments: false,
+  });
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const handleChange = (event) => {
+    setNewAssessment({
+      ...newAssessment,
+      [event.target.name]: event.target.value,
+    });
+  };
 
   const clearForm = () => {
-    setName("");
-    setWeight("");
-    setDueDate(dayjs());
-    setDueTime(dayjs().minute(0));
-    setHasSubAssessments(false);
+    setNewAssessment({
+      assessmentName: "",
+      assessmentWeight: "",
+      assessmentDueDate: dayjs(),
+      assessmentDueTime: dayjs().minute(0),
+      hasSubAssessments: false,
+    });
   };
 
   const handleSubmit = () => {
-    if (name != "" && weight != "") {
-      const assessment = {
-        assessmentName: name,
-        assessmentWeight: weight,
-        assessmentDueDate: dueDate.format("DD/MM/YYYY"),
-        assessmentDueTime: dueTime.format("hh:mma"),
-        hasSubAssessments: hasSubAssessments ? "Yes" : "No",
-      };
-
-      console.log(assessment);
-      setAssessments([...assessments, assessment]);
-      handleClose();
-      clearForm();
-    } else {
-      // handle error
+    if (newAssessment.assessmentName === "") {
+      console.log("Assessment name is empty");
+      setAlertMessage("Assessment name is empty");
+      setAlertOpen(true);
+      return;
     }
+
+    if (newAssessment.assessmentWeight === "") {
+      console.log("Assessment weight is empty");
+      setAlertMessage("Assessment weight is empty");
+      setAlertOpen(true);
+      return;
+    }
+
+    const assessment = {
+      assessmentName: newAssessment.assessmentName,
+      assessmentWeight: newAssessment.assessmentWeight,
+      assessmentDueDate: newAssessment.assessmentDueDate.format("DD/MM/YYYY"),
+      assessmentDueTime: newAssessment.assessmentDueTime.format("HH:mma"),
+      hasSubAssessments: newAssessment.hasSubAssessments ? "Yes" : "No",
+    };
+
+    console.log(assessment);
+    setAssessments([...assessments, assessment]);
+
+    handleClose();
+    setAlertOpen(false);
+    clearForm();
   };
 
   return (
@@ -74,8 +114,8 @@ export default function AddAssessment({
                   id="assessmentName"
                   label="Assessment Name"
                   name="assessmentName"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
+                  value={newAssessment.assessmentName}
+                  onChange={handleChange}
                   autoFocus
                   fullWidth
                 />
@@ -86,11 +126,10 @@ export default function AddAssessment({
                 <DatePicker
                   label="Due Date"
                   name="assessmentDueDate"
-                  value={dueDate}
-                  onChange={(newValue) => {
-                    setDueDate(newValue);
-                  }}
+                  value={newAssessment.assessmentDueDate}
+                  onChange={handleChange}
                   format="DD/MM/YYYY"
+                  fullWidth
                 />
               </Grid>
 
@@ -99,10 +138,9 @@ export default function AddAssessment({
                 <TimePicker
                   label="Due Time"
                   name="assessmentDueTime"
-                  value={dueTime}
-                  onChange={(newValue) => {
-                    setDueTime(newValue);
-                  }}
+                  value={newAssessment.assessmentDueTime}
+                  onChange={handleChange}
+                  fullWidth
                 />
               </Grid>
 
@@ -113,8 +151,8 @@ export default function AddAssessment({
                   id="assessmentWeight"
                   label="Assessment Weight"
                   name="assessmentWeight"
-                  value={weight}
-                  onChange={(event) => setWeight(event.target.value)}
+                  value={newAssessment.assessmentWeight}
+                  onChange={handleChange}
                   fullWidth
                   InputProps={{
                     endAdornment: (
@@ -129,20 +167,24 @@ export default function AddAssessment({
                   <FormControlLabel
                     control={
                       <Checkbox
-                        checked={hasSubAssessments}
-                        onChange={(event) =>
-                          setHasSubAssessments(event.target.checked)
-                        }
+                        checked={newAssessment.hasSubAssessments}
+                        onChange={handleChange}
+                        name="hasSubAssessments"
+                        id="hasSubAssessments"
+                        inputProps={{ "aria-label": "controlled" }}
                       />
                     }
                     label="Are there any sub assessments?"
                     labelPlacement="start"
-                    name="hasSubAssessments"
-                    id="hasSubAssessments"
                   />
                 </FormGroup>
               </Grid>
             </Grid>
+
+            {/* Alert */}
+            <CollapseAlert alertOpen={alertOpen} setAlertOpen={setAlertOpen}>
+              {alertMessage}
+            </CollapseAlert>
           </DialogContent>
           <DialogActions>
             <Button variant="contained" color="success" onClick={handleSubmit}>
@@ -153,6 +195,7 @@ export default function AddAssessment({
               color="error"
               onClick={() => {
                 handleClose();
+                setAlertOpen(false);
                 clearForm();
               }}
             >
