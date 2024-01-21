@@ -40,6 +40,7 @@ export default function AddAssessment({
   open,
   handleClose,
 }) {
+  // states
   const [newAssessment, setNewAssessment] = useState({
     assessmentName: "",
     assessmentWeight: "",
@@ -47,16 +48,25 @@ export default function AddAssessment({
     assessmentDueTime: dayjs().minute(0),
     hasSubAssessments: false,
   });
+
+  // alert states
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
+  /**
+   * Handle any changes to the form and update the newAssessment state
+   * @param {*} event onChange event
+   */
   const handleChange = (event) => {
-    setNewAssessment({
+    setNewAssessment((newAssessment) => ({
       ...newAssessment,
       [event.target.name]: event.target.value,
-    });
+    }));
   };
 
+  /**
+   * Clear the form
+   */
   const clearForm = () => {
     setNewAssessment({
       assessmentName: "",
@@ -67,7 +77,12 @@ export default function AddAssessment({
     });
   };
 
+  /**
+   * Handle the submit button click
+   * @returns if there is a validation error, display a snackbar message and return
+   */
   const handleSubmit = () => {
+    // check if the assessment name is empty
     if (newAssessment.assessmentName === "") {
       console.log("Assessment name is empty");
       setAlertMessage("Assessment name is empty");
@@ -75,6 +90,26 @@ export default function AddAssessment({
       return;
     }
 
+    // check if the assessment name already exists
+    const isAssessmentNameExists = assessments.some(
+      (assessment) => assessment.assessmentName === newAssessment.assessmentName
+    );
+    if (isAssessmentNameExists) {
+      console.log("Assessment name already exists");
+      setAlertMessage("Assessment name already exists");
+      setAlertOpen(true);
+      return;
+    }
+
+    // check if the assessment weight is a number
+    if (isNaN(newAssessment.assessmentWeight)) {
+      console.log("Assessment weight must be a number");
+      setAlertMessage("Assessment weight must be a number");
+      setAlertOpen(true);
+      return;
+    }
+
+    // check if the assessment weight is empty
     if (newAssessment.assessmentWeight === "") {
       console.log("Assessment weight is empty");
       setAlertMessage("Assessment weight is empty");
@@ -82,6 +117,7 @@ export default function AddAssessment({
       return;
     }
 
+    // create an assessment object. this is the format that the database expects
     const assessment = {
       assessmentName: newAssessment.assessmentName,
       assessmentWeight: newAssessment.assessmentWeight,
@@ -90,9 +126,10 @@ export default function AddAssessment({
       hasSubAssessments: newAssessment.hasSubAssessments ? "Yes" : "No",
     };
 
-    console.log(assessment);
-    setAssessments([...assessments, assessment]);
+    // add the assessment to the state
+    setAssessments((assessments) => [...assessments, assessment]);
 
+    // close the dialog and reset the form
     handleClose();
     setAlertOpen(false);
     clearForm();
@@ -102,7 +139,6 @@ export default function AddAssessment({
     <Container>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         {/* Dialog for adding new assessment */}
-
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Add new assessment</DialogTitle>
           <DialogContent>
@@ -187,9 +223,12 @@ export default function AddAssessment({
             </CollapseAlert>
           </DialogContent>
           <DialogActions>
+            {/* Submit button */}
             <Button variant="contained" color="success" onClick={handleSubmit}>
               Add
             </Button>
+
+            {/* Cancel button */}
             <Button
               variant="contained"
               color="error"
@@ -208,6 +247,7 @@ export default function AddAssessment({
   );
 }
 
+// prop types
 AddAssessment.propTypes = {
   assessments: PropTypes.array.isRequired,
   setAssessments: PropTypes.func.isRequired,

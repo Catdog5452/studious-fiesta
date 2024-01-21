@@ -130,6 +130,8 @@ export default function AddPaper() {
       lecturers: [],
       assessments: [],
     });
+    setLecturers([]);
+    setAssessments([]);
     setAlertOpen(false);
   };
 

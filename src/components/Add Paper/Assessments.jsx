@@ -1,9 +1,9 @@
+// dependencies
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useState } from "react";
-import AddAssessment from "./AddAssessment";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -14,17 +14,36 @@ import Paper from "@mui/material/Paper";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 
+// components
+import AddAssessment from "./AddAssessment";
+
+/**
+ * Add a new assessment to the current new paper, and list all assessments
+ * @param {*} param0 assessments and setAssessments props
+ * @returns List of all assessments and the ability to add new assessments
+ */
 export default function Assessments({ assessments, setAssessments }) {
+  // states
   const [open, setOpen] = useState(false);
 
+  /**
+   * Handle the open and close of the add assessment dialog
+   */
   const handleOpen = () => {
     setOpen(true);
   };
 
+  /**
+   * Handle the open and close of the add assessment dialog
+   */
   const handleClose = () => {
     setOpen(false);
   };
 
+  /**
+   * Handle the delete assessment button click
+   * @param {string} assessmentName name of the assessment to delete
+   */
   const handleDeleteAssessment = (assessmentName) => {
     setAssessments(
       assessments.filter(
@@ -36,10 +55,10 @@ export default function Assessments({ assessments, setAssessments }) {
   return (
     <Box>
       <Typography variant="h6">Assessments</Typography>
-      {/* List all current assessments 
-      Maybe want to use a table or more complex List*/}
+      {/* Display al the current assessments in a table */}
       <TableContainer component={Paper} sx={{ mt: 2, mb: 2 }}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          {/* Headers */}
           <TableHead>
             <TableRow>
               <TableCell>Assessment Name</TableCell>
@@ -50,6 +69,7 @@ export default function Assessments({ assessments, setAssessments }) {
               <TableCell>Delete</TableCell>
             </TableRow>
           </TableHead>
+          {/* Assessments */}
           <TableBody>
             {assessments.map((assessment) => (
               <TableRow
@@ -84,6 +104,7 @@ export default function Assessments({ assessments, setAssessments }) {
         NEW ASSESSMENTS
       </Button>
 
+      {/* Dialog for adding new assessment */}
       <AddAssessment
         assessments={assessments}
         setAssessments={setAssessments}
@@ -94,6 +115,7 @@ export default function Assessments({ assessments, setAssessments }) {
   );
 }
 
+// prop types
 Assessments.propTypes = {
   assessments: PropTypes.array.isRequired,
   setAssessments: PropTypes.func.isRequired,
