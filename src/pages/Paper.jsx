@@ -151,7 +151,7 @@ export default function Paper() {
           <Overview paper={paper} handleUpdate={handleUpdate} />
         </CustomTabPanel>
         <CustomTabPanel value={tabValue} index={1}>
-          <Lecturers paper={paper} />
+          <Lecturers paper={paper} handleUpdate={handleUpdate} />
         </CustomTabPanel>
         <CustomTabPanel value={tabValue} index={2}>
           <PaperAssessments paper={paper} />
