@@ -6,33 +6,33 @@ import Button from "@mui/material/Button";
 
 export default function OverviewView({ paper, enableEditMode }) {
   return (
-    <Grid container spacing={2} sx={{ mt: 2 }}>
+    <Grid container spacing={2}>
       <Grid xs={12}>
-        <Typography variant="h5">Paper Code</Typography>
+        <Typography variant="h6">Paper Code</Typography>
         <Typography>{paper.paperCode}</Typography>
       </Grid>
 
       {/* Paper name */}
       <Grid xs={12}>
-        <Typography variant="h5">Paper Name</Typography>
+        <Typography variant="h6">Paper Name</Typography>
         <Typography>{paper.paperName}</Typography>
       </Grid>
 
       {/* Paper year */}
       <Grid xs={12}>
-        <Typography variant="h5">Paper Year</Typography>
+        <Typography variant="h6">Paper Year</Typography>
         <Typography>{paper.paperYear}</Typography>
       </Grid>
 
       {/* Paper semester */}
       <Grid xs={12}>
-        <Typography variant="h5">Paper Semester</Typography>
+        <Typography variant="h6">Paper Semester</Typography>
         <Typography>{paper.paperSemester}</Typography>
       </Grid>
 
       {/* Paper department */}
       <Grid xs={12}>
-        <Typography variant="h5">Paper Department</Typography>
+        <Typography variant="h6">Paper Department</Typography>
         <Typography>
           {paper.paperDepartment === "" ? "Not Listed" : paper.paperDepartment}
         </Typography>
@@ -40,7 +40,7 @@ export default function OverviewView({ paper, enableEditMode }) {
 
       {/* Paper description */}
       <Grid xs={12}>
-        <Typography variant="h5">Paper Description</Typography>
+        <Typography variant="h6">Paper Description</Typography>
         <Typography>
           {paper.paperDescription === ""
             ? "Not Listed"

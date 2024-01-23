@@ -58,6 +58,16 @@ export default function AddAssessment({
    * @param {*} event onChange event
    */
   const handleChange = (event) => {
+    // handle checkbox
+    if (event.target.name === "hasSubAssessments") {
+      setNewAssessment((newAssessment) => ({
+        ...newAssessment,
+        [event.target.name]: event.target.checked,
+      }));
+      return;
+    }
+
+    // handle other inputs
     setNewAssessment((newAssessment) => ({
       ...newAssessment,
       [event.target.name]: event.target.value,
@@ -118,13 +128,24 @@ export default function AddAssessment({
     }
 
     // create an assessment object. this is the format that the database expects
-    const assessment = {
-      assessmentName: newAssessment.assessmentName,
-      assessmentWeight: newAssessment.assessmentWeight,
-      assessmentDueDate: newAssessment.assessmentDueDate.format("DD/MM/YYYY"),
-      assessmentDueTime: newAssessment.assessmentDueTime.format("HH:mma"),
-      hasSubAssessments: newAssessment.hasSubAssessments ? "Yes" : "No",
-    };
+    let assessment = {};
+    if (newAssessment.hasSubAssessments) {
+      assessment = {
+        assessmentName: newAssessment.assessmentName,
+        assessmentWeight: newAssessment.assessmentWeight,
+        assessmentDueDate: "",
+        assessmentDueTime: "",
+        hasSubAssessments: newAssessment.hasSubAssessments ? "Yes" : "No",
+      };
+    } else {
+      assessment = {
+        assessmentName: newAssessment.assessmentName,
+        assessmentWeight: newAssessment.assessmentWeight,
+        assessmentDueDate: newAssessment.assessmentDueDate.format("DD/MM/YYYY"),
+        assessmentDueTime: newAssessment.assessmentDueTime.format("HH:mma"),
+        hasSubAssessments: newAssessment.hasSubAssessments ? "Yes" : "No",
+      };
+    }
 
     // add the assessment to the state
     setAssessments((assessments) => [...assessments, assessment]);
@@ -158,27 +179,32 @@ export default function AddAssessment({
               </Grid>
 
               {/* Assessment due date */}
-              <Grid xs={12} sm={6}>
-                <DatePicker
-                  label="Due Date"
-                  name="assessmentDueDate"
-                  value={newAssessment.assessmentDueDate}
-                  onChange={handleChange}
-                  format="DD/MM/YYYY"
-                  fullWidth
-                />
-              </Grid>
+              {!newAssessment.hasSubAssessments ? (
+                <>
+                  <Grid xs={12} sm={6}>
+                    <DatePicker
+                      label="Due Date"
+                      name="assessmentDueDate"
+                      value={newAssessment.assessmentDueDate}
+                      onChange={handleChange}
+                      format="DD/MM/YYYY"
+                      fullWidth
+                    />
+                  </Grid>
 
-              {/* Assessment due time */}
-              <Grid xs={12} sm={6}>
-                <TimePicker
-                  label="Due Time"
-                  name="assessmentDueTime"
-                  value={newAssessment.assessmentDueTime}
-                  onChange={handleChange}
-                  fullWidth
-                />
-              </Grid>
+                  <Grid xs={12} sm={6}>
+                    <TimePicker
+                      label="Due Time"
+                      name="assessmentDueTime"
+                      value={newAssessment.assessmentDueTime}
+                      onChange={handleChange}
+                      fullWidth
+                    />
+                  </Grid>
+                </>
+              ) : (
+                <></>
+              )}
 
               {/* Assessment weight */}
               <Grid xs={12} sm={6}>

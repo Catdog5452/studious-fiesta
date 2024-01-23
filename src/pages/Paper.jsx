@@ -30,13 +30,20 @@ function a11yProps(index) {
 }
 
 export default function Paper() {
+  // context
   const papers = useContext(PaperContext);
   const setPapers = useContext(PaperUpdateContext);
+
+  // get the paper
   const params = useParams();
   const paperId = params.id;
   const paper = papers.find((paper) => paper.id === paperId);
+
+  // states
   const [tabValue, setTabValue] = useState(0);
   const [openDelete, setOpenDelete] = useState(false);
+
+  // navigation
   const navigate = useNavigate();
 
   const handleOpenDelete = () => {
@@ -84,6 +91,7 @@ export default function Paper() {
   return (
     paper && (
       <Box>
+        {/* Paper header */}
         <Grid container spacing={2}>
           <Grid xs={10}>
             <Typography variant="h4">
@@ -135,6 +143,8 @@ export default function Paper() {
             </Button>
           </DialogActions>
         </Dialog>
+
+        {/* Tabs */}
         <Box
           sx={{ mt: 1, borderBottom: 1, borderTop: 1, borderColor: "divider" }}
         >
@@ -147,15 +157,17 @@ export default function Paper() {
             <Tab label="Assessments" {...a11yProps(2)} />
           </Tabs>
         </Box>
-        <CustomTabPanel value={tabValue} index={0}>
-          <Overview paper={paper} handleUpdate={handleUpdate} />
-        </CustomTabPanel>
-        <CustomTabPanel value={tabValue} index={1}>
-          <Lecturers paper={paper} handleUpdate={handleUpdate} />
-        </CustomTabPanel>
-        <CustomTabPanel value={tabValue} index={2}>
-          <PaperAssessments paper={paper} />
-        </CustomTabPanel>
+        <Box sx={{ width: "100%", maxWidth: 840, mt: 1 }}>
+          <CustomTabPanel value={tabValue} index={0}>
+            <Overview paper={paper} handleUpdate={handleUpdate} />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={1}>
+            <Lecturers paper={paper} handleUpdate={handleUpdate} />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={2}>
+            <PaperAssessments paper={paper} />
+          </CustomTabPanel>
+        </Box>
       </Box>
     )
   );

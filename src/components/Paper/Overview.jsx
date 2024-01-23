@@ -2,6 +2,7 @@
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
+import Typography from "@mui/material/Typography";
 
 // components
 import OverviewEdit from "../Overview/OverviewEdit";
@@ -103,6 +104,10 @@ export default function Overview({ paper, handleUpdate }) {
 
   return (
     <Box>
+      <Typography variant="h5" sx={{ mb: 1 }}>
+        {" "}
+        Overview{" "}
+      </Typography>
       {/* Different components depending on whether in edit mode or not */}
       {editMode ? (
         <OverviewEdit

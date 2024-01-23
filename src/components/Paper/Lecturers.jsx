@@ -4,10 +4,6 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
 import Grid from "@mui/material/Unstable_Grid2";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
@@ -26,7 +22,6 @@ import CollapseAlert from "../CollapseAlert";
 // TODO: implement this component. Table of papers with name and email, delete option, add button, maybe a contact button to redirect to mailto:email
 export default function Lecturers({ paper, handleUpdate }) {
   const [newPaper, setNewPaper] = useState(paper);
-  const [open, setOpen] = useState(false);
   const [newLecturer, setNewLecturer] = useState({
     lecturerName: "",
     lecturerEmail: "",
@@ -36,14 +31,6 @@ export default function Lecturers({ paper, handleUpdate }) {
   // alert states
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const handleDeleteLecturer = (lecturerEmail) => {
     const updatedLecturers = lecturers.filter(
@@ -61,19 +48,8 @@ export default function Lecturers({ paper, handleUpdate }) {
     }));
   };
 
-  const handleSubmit = () => {
-    if (newLecturer.lecturerName === "") {
-      setAlertOpen(true);
-      setAlertMessage("Please enter a lecturer name");
-      return;
-    }
-
-    if (newLecturer.lecturerEmail === "") {
-      setAlertOpen(true);
-      setAlertMessage("Please enter a lecturer email");
-      return;
-    }
-
+  const handleSubmit = (event) => {
+    event.preventDefault();
     // handle if the email already exists
     if (
       lecturers.find(
@@ -96,7 +72,7 @@ export default function Lecturers({ paper, handleUpdate }) {
       lecturerEmail: "",
     });
 
-    handleClose();
+    handleReset();
   };
 
   const handlePaperUpdate = (updatedLecturers) => {
@@ -107,6 +83,13 @@ export default function Lecturers({ paper, handleUpdate }) {
 
     setNewPaper(updatedPaper);
     handleUpdate(updatedPaper);
+  };
+
+  const handleReset = () => {
+    setNewLecturer({
+      lecturerName: "",
+      lecturerEmail: "",
+    });
   };
 
   useEffect(() => {
@@ -121,12 +104,15 @@ export default function Lecturers({ paper, handleUpdate }) {
   }, [paper]);
 
   return (
-    <Box sx={{ mt: 2 }}>
+    <Box>
       <Typography variant="h5">Lecturers</Typography>
       {/* List all current lecturers for this paper */}
 
-      <TableContainer component={Paper} sx={{ mt: 2, mb: 2 }}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <TableContainer
+        component={Paper}
+        sx={{ mt: 2, mb: 2, minWidth: 650, width: "100%" }}
+      >
+        <Table aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Lecturer Name</TableCell>
@@ -149,6 +135,7 @@ export default function Lecturers({ paper, handleUpdate }) {
                 <TableCell align="right">
                   <IconButton
                     variant="contained"
+                    color="error"
                     onClick={() => {
                       handleDeleteLecturer(lecturer.lecturerEmail);
                     }}
@@ -163,58 +150,59 @@ export default function Lecturers({ paper, handleUpdate }) {
         </Table>
       </TableContainer>
 
-      {/* Add new lecturer to the paper */}
-      <Button variant="contained" onClick={handleClickOpen}>
-        New lecturer
-      </Button>
-
-      {/* Popup */}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add new lecturer</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 2 }}>
-            {/* Lecturer name */}
-            <Grid xs={12} sm={6}>
-              <TextField
-                autoComplete="off"
-                required
-                id="lecturerName"
-                label="Lecturer Name"
-                name="lecturerName"
-                value={newLecturer.lecturerName}
-                onChange={handleChange}
-                autoFocus
-                fullWidth
-              />
-            </Grid>
-
-            {/* Lecturer email */}
-            <Grid xs={12} sm={6}>
-              <TextField
-                autoComplete="off"
-                required
-                id="lecturerEmail"
-                label="Lecturer Email"
-                name="lecturerEmail"
-                value={newLecturer.lecturerEmail}
-                onChange={handleChange}
-                fullWidth
-              />
-            </Grid>
+      {/* Add new lecturer */}
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        onReset={handleReset}
+        sx={{ mt: 2 }}
+      >
+        <Grid container spacing={2} sx={{ width: "100%" }}>
+          <Grid xs={12}>
+            <Typography variant="h6">Add New Lecturer</Typography>
           </Grid>
-          <CollapseAlert alertOpen={alertOpen} setAlertOpen={setAlertOpen}>
-            {alertMessage}
-          </CollapseAlert>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="success" onClick={handleSubmit}>
-            Add
-          </Button>
-          <Button variant="contained" color="error" onClick={handleClose}>
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+          <Grid xs={12}>
+            <TextField
+              label="Lecturer Name"
+              variant="outlined"
+              name="lecturerName"
+              value={newLecturer.lecturerName}
+              onChange={handleChange}
+              fullWidth
+              required
+              autoComplete="off"
+            />
+          </Grid>
+          <Grid xs={12}>
+            <TextField
+              label="Lecturer Email"
+              variant="outlined"
+              name="lecturerEmail"
+              value={newLecturer.lecturerEmail}
+              onChange={handleChange}
+              fullWidth
+              required
+              autoComplete="off"
+            />
+          </Grid>
+          <Grid xs={12}>
+            <CollapseAlert alertOpen={alertOpen} setAlertOpen={setAlertOpen}>
+              {alertMessage}
+            </CollapseAlert>
+          </Grid>
+          <Grid xs={3}>
+            <Button variant="outlined" color="success" type="submit" fullWidth>
+              Add Lecturer
+            </Button>
+          </Grid>
+          <Grid xs={3}>
+            <Button variant="outlined" color="warning" type="reset" fullWidth>
+              Reset
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
     </Box>
   );
 }

@@ -41,7 +41,7 @@ export default function OverviewEdit({
       onReset={handleCancel}
       container
       spacing={2}
-      sx={{ mt: 2, width: "100%", maxWidth: 850 }}
+      sx={{ width: "100%" }}
     >
       <Grid xs={12}>
         <TextField
